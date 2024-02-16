@@ -1,5 +1,5 @@
 import tkinter as tk
-
+import tkinter.messagebox as msg
 #xxxxxxxxxxxxxxxxxxxxxxxxx Lib Class xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 class library:
     space ="\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n"
@@ -87,23 +87,22 @@ q)Exit
     print(menu)
     return menu
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
+#---Form attributes---
 lib=library("books.txt")
 libForm=tk.Tk()
 libForm.title("Library Menu")
 libForm.geometry("435x571+700+150")
 libForm.resizable(False,False)
-
+libForm.iconbitmap(default="books.ico")
 photo = tk.PhotoImage(file="design.png")
-
 label=tk.Label(text="",image=photo)
 label.pack()
-
 
 #--Menu--
 menu=tk.Label(libForm,fg="#593515", bg="#d1d0ce",font="Halvetica 10",text=menu())
 menu.place(x=173,y=105,width=270)
 
+#--choice menu--
 def Go():
     #--choice operation--
     if choice_entry.get()=="1":
@@ -117,9 +116,12 @@ def Go():
         
     elif choice_entry.get()=="q" or choice_entry.get()=="Q":
         Exit()
+    elif choice_entry.get()=="":
+        msg.showwarning("Choice is empty!","Choice can not be empty!")
     else:
-        print("please choose 1,2 or 3")
+        msg.showwarning("Choice is empty!","Please make your choice 1 or 2 or 3")
 
+#-- Add Attributes hidding --
 def addForget():
       bookName.place_forget()
       bookName_entry.place_forget()
@@ -132,13 +134,14 @@ def addForget():
       bookAuthor_entry.place_forget()
       AddBookButton.place_forget()
       bookTitle.place_forget()
-      warn2.place_forget()
+      addBook_removeBook_warn.place_forget()
       bookName_entry.delete(0,"end")
       bookAuthor_entry.delete(0,"end")
       bookPageNum_entry.delete(0,"end")
       bookYear_entry.delete(0,"end")
-      warn2.config(text="")
-      
+      addBook_removeBook_warn.config(text="")
+
+#-- Remove attributes hidding -- 
 def removeForget():
     addForget()
     removeBook.place_forget()
@@ -146,27 +149,32 @@ def removeForget():
     removeButton.place_forget()
     removeBook_entry.place_forget()
     remBook.place_forget()
-    warn.place_forget()
-    warn.config(text="")
+    removeBook_warn.place_forget()
+    removeBook_warn.config(text="")
     removeBook_entry.delete(0,"end")
 
+#-- List attributes hidding -- 
 def listforget():
     listBook.place_forget()
     listTitle.place_forget()
 
+#-- listBook -- 
 def ListBook():
     addForget()
     removeForget()
     listTitle.place(x=250,y=290)
     listBook.place( width=250,heigh=200,x=177,y=280)
     books=lib.listBooks()
-    new_text = "\n".join([f"Book Name: {book[0]}, Author: {book[1]}" for book in books])
-    listBook.config(text=new_text)
+    if len(books)==0:
+        listBook.config(text="There aren't any books in the library")
+    else:
+        new_text = "\n".join([f"Book Name: {book[0]}, Author: {book[1]}" for book in books])
+        listBook.config(text=new_text)
 
+#--AddBook attributes showing--
 def AddBook_features():
     removeForget()
     listforget()
-
     bookTitle.place(x=230,y=290)
     bookName.place(x=180,y=330)
     bookName_entry.place(x=310,y=330,width=110)
@@ -177,16 +185,21 @@ def AddBook_features():
     bookPageNum.place(x=180,y=420)
     bookPageNum_entry.place(x=310,y=420,width=110)
     AddBookButton.place(x=215,y=450,width=165)
-    warn2.place(x=245,y=480,width=110)
-    
+    addBook_removeBook_warn.place(x=200,y=480,width=200)
+
+#--AddBook--
 def AddBook():
     book_name=bookName_entry.get()
     book_author=bookAuthor_entry.get()
     book_year=bookYear_entry.get()
     book_page_num=bookPageNum_entry.get()
-    lib.addBook(book_name, book_author, book_year, book_page_num)  
-    warn2.config(text="Book added")
+    if book_name=="" or book_author=="" or book_year=="" or book_page_num=="":
+        addBook_removeBook_warn.config(text="** Books features can not be empty! **")
+    else:
+        lib.addBook(book_name, book_author, book_year, book_page_num)  
+        addBook_removeBook_warn.config(text="** Book has been added **")
 
+#--RemoveBook attributes showing--
 def RemoveBook():
     addForget()
     listforget()    
@@ -195,19 +208,25 @@ def RemoveBook():
     removeBook.place(x=200,y=330)
     removeBook_entry.place(x=290,y=330,width=110)
     removeButton.place(x=290,y=360,width=110)
-    warn.place(x=250,y=400,width=110)
+    removeBook_warn.place(x=200,y=400,width=200)
 
+#--RemoveBook--
 def RemoveBook_lib():
     selected_book_name=removeBook_entry.get()
-    book_exist=lib.check_book(selected_book_name)
-    if book_exist:
-        removed=lib.removeBook(selected_book_name)
-        if removed:
-            warn.config(text="Book removed")
-        else:
-            warn.config(text="Book did not remove")         
+    if selected_book_name=="":
+        removeBook_warn.config(text="** Book name can not be empty! **")
     else:
-        warn.config(text="Book is not exist")
+        book_exist=lib.check_book(selected_book_name)
+        if book_exist:
+            removed=lib.removeBook(selected_book_name)
+            if removed:
+                removeBook_warn.config(text="** Book has been removed **")
+            else:
+                removeBook_warn.config(text="** Book did not remove **")         
+        else:
+            removeBook_warn.config(text="** Book is not exist **")
+
+#--Exit--
 def Exit():
     libForm.destroy()
 
@@ -227,7 +246,7 @@ bookYear_entry=tk.Entry(libForm,text="",bg="#938572",fg="white")
 bookPageNum=tk.Label(libForm,text="Book Number of Page:",bg="#d1d0ce",fg="#593515")
 bookPageNum_entry=tk.Entry(libForm,text="",bg="#938572",fg="white")
 AddBookButton=tk.Button(libForm,text="Add Book",bg="#563d1f",fg="white",command=AddBook)
-warn2=tk.Label(libForm,text=" ",fg="#593515",bg="#d1d0ce")
+addBook_removeBook_warn=tk.Label(libForm,text=" ",fg="#593515",bg="#d1d0ce")
 
 #RemoveBook Attributes
 remBook=tk.Label(libForm,text="Remove Book Feature",font="Halvetica 10 bold underline",bg="#d1d0ce",fg="#593515")
@@ -235,7 +254,7 @@ removeBook=tk.Label(libForm,text="Book name: ",bg="#d1d0ce",fg="#593515")
 removeBook_entry=tk.Entry(libForm,text="",bg="#938572",fg="white")
 removeButton=tk.Button(libForm,text="Remove",command=RemoveBook_lib,bg="#563d1f",fg="white")
 removeButton_entry=tk.Entry(libForm,text="")
-warn=tk.Label(libForm,text=" ",fg="#593515",bg="#d1d0ce")
+removeBook_warn=tk.Label(libForm,text=" ",fg="#593515",bg="#d1d0ce")
 
 #--Choice Entry--
 choice=tk.Label(libForm,text="Make Your Choice: ",bg="#d1d0ce",fg="#593515",font="Arial 8 bold")
