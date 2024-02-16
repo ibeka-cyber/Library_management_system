@@ -134,12 +134,12 @@ def addForget():
       bookAuthor_entry.place_forget()
       AddBookButton.place_forget()
       bookTitle.place_forget()
-      addBook_removeBook_warn.place_forget()
+      addBook_warn.place_forget()
       bookName_entry.delete(0,"end")
       bookAuthor_entry.delete(0,"end")
       bookPageNum_entry.delete(0,"end")
       bookYear_entry.delete(0,"end")
-      addBook_removeBook_warn.config(text="")
+      addBook_warn.config(text="")
 
 #-- Remove attributes hidding -- 
 def removeForget():
@@ -185,7 +185,7 @@ def AddBook_features():
     bookPageNum.place(x=180,y=420)
     bookPageNum_entry.place(x=310,y=420,width=110)
     AddBookButton.place(x=215,y=450,width=165)
-    addBook_removeBook_warn.place(x=200,y=480,width=200)
+    addBook_warn.place(x=180,y=480,width=220)
 
 #--AddBook--
 def AddBook():
@@ -194,10 +194,14 @@ def AddBook():
     book_year=bookYear_entry.get()
     book_page_num=bookPageNum_entry.get()
     if book_name=="" or book_author=="" or book_year=="" or book_page_num=="":
-        addBook_removeBook_warn.config(text="** Books features can not be empty! **")
+        addBook_warn.config(text="** Books features can not be empty! **")
+    elif book_page_num.isnumeric()==False or book_year.isnumeric()==False:
+        addBook_warn.config(text="** Year or page must be numeric **")
+    elif len(book_year)>4:
+        addBook_warn.config(text="** The year must be a maximum of 4 digits. **")
     else:
         lib.addBook(book_name, book_author, book_year, book_page_num)  
-        addBook_removeBook_warn.config(text="** Book has been added **")
+        addBook_warn.config(text="** Book has been added **")
 
 #--RemoveBook attributes showing--
 def RemoveBook():
@@ -246,7 +250,7 @@ bookYear_entry=tk.Entry(libForm,text="",bg="#938572",fg="white")
 bookPageNum=tk.Label(libForm,text="Book Number of Page:",bg="#d1d0ce",fg="#593515")
 bookPageNum_entry=tk.Entry(libForm,text="",bg="#938572",fg="white")
 AddBookButton=tk.Button(libForm,text="Add Book",bg="#563d1f",fg="white",command=AddBook)
-addBook_removeBook_warn=tk.Label(libForm,text=" ",fg="#593515",bg="#d1d0ce")
+addBook_warn=tk.Label(libForm,text=" ",fg="#593515",bg="#d1d0ce")
 
 #RemoveBook Attributes
 remBook=tk.Label(libForm,text="Remove Book Feature",font="Halvetica 10 bold underline",bg="#d1d0ce",fg="#593515")
